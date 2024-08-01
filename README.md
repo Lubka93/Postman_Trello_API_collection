@@ -6,5 +6,5 @@ Each request contains scripts written in JavaScript for automation of the workfl
 Trello API: https://developer.atlassian.com/cloud/trello/rest/api-group-actions/#api-group-actions
 
 ## Collection import
-
-Create your own API key and API token (https://developer.atlassian.com/cloud/trello/power-ups/) and add value to the collection variables. 
+Download the Postman_Trello_API collection (.json extension) and import to Postman.
+Create your own API key and API token (https://developer.atlassian.com/cloud/trello/power-ups/) and add value to the collection variables (current values). 
