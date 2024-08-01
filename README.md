@@ -1,6 +1,7 @@
 # Postman_Trello_API_collection
 
-Collection contains basic requests for creating/updateing/deleting items for public Trello API using Postman.
+Collection contains basic requests for creating/updateing/deleting items and search functionality for public Trello API using Postman.
+Each request contains scripts written in JavaScript for automation of the workflow.
 
 Trello API: https://developer.atlassian.com/cloud/trello/rest/api-group-actions/#api-group-actions
 
