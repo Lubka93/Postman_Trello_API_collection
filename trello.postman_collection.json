@@ -567,13 +567,24 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let nameOfTheBoard = 'Test1 board';\r",
+									"pm.collectionVariables.set('boardName', nameOfTheBoard);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
 					],
 					"request": {
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/1/boards/?name=New board is created&key={{API_key}}&token={{API_token}}",
+							"raw": "{{baseURL}}/1/boards/?name={{boardName}}&key={{API_key}}&token={{API_token}}",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -585,7 +596,7 @@
 							"query": [
 								{
 									"key": "name",
-									"value": "New board is created"
+									"value": "{{boardName}}"
 								},
 								{
 									"key": "key",
@@ -1793,6 +1804,17 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let nameOfTheBoard = 'Test1 board';\r",
+									"pm.collectionVariables.set('boardName', nameOfTheBoard);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
 					],
 					"request": {
@@ -1864,7 +1886,9 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.collectionVariables.set('listName', 'To do list');"
+									"let listName = 'To do list';\r",
+									"\r",
+									"pm.collectionVariables.set('listName', listName);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -3084,8 +3108,12 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"packages": {},
-								"type": "text/javascript"
+								"exec": [
+									"let nameOfTheBoard = 'Test1 board';\r",
+									"pm.collectionVariables.set('boardName', nameOfTheBoard);"
+								],
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -3158,7 +3186,9 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.collectionVariables.set('listName', 'To do list');"
+									"let listName = 'To do list';\r",
+									"\r",
+									"pm.collectionVariables.set('listName', listName);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -3842,6 +3872,10 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "move card to different lists",
+			"item": []
 		}
 	],
 	"event": [
