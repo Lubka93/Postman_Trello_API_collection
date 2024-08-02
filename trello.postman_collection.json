@@ -3080,13 +3080,20 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/1/boards/?name=New board is created&key={{API_key}}&token={{API_token}}",
+							"raw": "{{baseURL}}/1/boards/?name={{boardName}}&key={{API_key}}&token={{API_token}}",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -3098,7 +3105,7 @@
 							"query": [
 								{
 									"key": "name",
-									"value": "New board is created"
+									"value": "{{boardName}}"
 								},
 								{
 									"key": "key",
@@ -3233,7 +3240,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"let cardName = 'New card';\r",
+									"let cardName = 'Shopping list';\r",
 									"let cardDesc = 'Card details and more...';\r",
 									"\r",
 									"pm.collectionVariables.set('cardName', cardName);\r",
@@ -3283,6 +3290,67 @@
 					"response": []
 				},
 				{
+					"name": "get created card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('Response is an object', ()=>{\r",
+									"pm.expect(response).to.be.an('object');\r",
+									"})\r",
+									"\r",
+									"pm.test('Created card has correct cardId', ()=>{\r",
+									"let cardId = pm.collectionVariables.get('cardId');\r",
+									"pm.expect(response.id).to.eql(cardId);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/1/cards/:id?key={{API_key}}&token={{API_token}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"1",
+								"cards",
+								":id"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{API_key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{API_token}}"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{cardId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "search valid query on trello",
 					"event": [
 						{
@@ -3301,9 +3369,31 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"const response = pm.response.json();\r",
+									"const queryArray = response.options.terms;\r",
+									"const resultsArray = response.cards;\r",
+									"let query = pm.collectionVariables.get('query');\r",
+									"\r",
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
-									"});"
+									"});\r",
+									"\r",
+									"pm.test('Search query is valid and is added to the response object', ()=>{\r",
+									"for (let item of queryArray) {\r",
+									"pm.expect(query).to.contain(item.text)\r",
+									"}\r",
+									"})\r",
+									"\r",
+									"pm.test('Search query correctly finds the name of the card', ()=>{\r",
+									"pm.expect(response.boards).to.be.empty;\r",
+									"pm.expect(response.organizations).to.be.empty;\r",
+									"pm.expect(response.members).to.be.empty;\r",
+									"pm.expect(response.cards).to.not.be.empty;\r",
+									"for (let item of resultsArray) {\r",
+									"    pm.expect(item.name).to.contain(query)\r",
+									"    console.log(item.name, query)\r",
+									"}\r",
+									"})"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -3348,7 +3438,7 @@
 								"exec": [
 									"let invalidQuery = 'fjssklagfaklwhfkajshlasdjfhlfjasd';\r",
 									"\r",
-									"pm.collectionVariables.set('query');"
+									"pm.collectionVariables.set('query', invalidQuery);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -3359,14 +3449,25 @@
 							"script": {
 								"exec": [
 									"const response = pm.response.json();\r",
+									"const queryArray = response.options.terms;\r",
+									"let query = pm.collectionVariables.get('query');\r",
 									"\r",
 									"pm.test(\"Status code is 200\", function () {\r",
 									"pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
 									"pm.test('The response text is null', ()=>{\r",
-									"pm.expect(response.options.terms[0].text).to.eql('null');\r",
-									"}) "
+									"for (let item of queryArray) {\r",
+									"pm.expect(query).to.contain(item.text)\r",
+									"}\r",
+									"}) \r",
+									"\r",
+									"pm.test('Search query correctly displayed no results', ()=>{\r",
+									"pm.expect(response.boards).to.be.empty;\r",
+									"pm.expect(response.organizations).to.be.empty;\r",
+									"pm.expect(response.members).to.be.empty;\r",
+									"pm.expect(response.cards).to.be.empty;\r",
+									"})"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -3411,7 +3512,7 @@
 								"exec": [
 									"let invalidQuery = '';\r",
 									"\r",
-									"pm.collectionVariables.set('query');\r",
+									"pm.collectionVariables.set('query', invalidQuery);\r",
 									"\r",
 									""
 								],
@@ -3423,15 +3524,17 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"const response = pm.response.json();\r",
+									"const response = pm.response.text();\r",
 									"\r",
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
 									"});\r",
 									"\r",
-									"pm.test('The response text is null', ()=>{\r",
-									"pm.expect(response.options.terms[0].text).to.eql('null');\r",
-									"})   "
+									"pm.test('The response has correct error message', ()=>{\r",
+									"pm.expect(response).to.eql('invalid value for query');\r",
+									"})   \r",
+									"\r",
+									""
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -3476,7 +3579,7 @@
 								"exec": [
 									"let invalidQuery = '          ';\r",
 									"\r",
-									"pm.collectionVariables.set('query');"
+									"pm.collectionVariables.set('query', invalidQuery);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -3492,10 +3595,15 @@
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
-									"pm.test('The response text is null', ()=>{\r",
-									"pm.expect(response.options.terms[0].text).to.eql('null');\r",
+									"pm.test('The response query array is empty', ()=>{          \r",
+									"pm.expect(response.options.terms).to.be.empty\r",
+									"})   \r",
 									"\r",
-									"})   "
+									"pm.test('Search query correctly displayed no results', ()=>{\r",
+									"pm.expect(response.boards).to.be.empty;\r",
+									"pm.expect(response.organizations).to.be.empty;\r",
+									"pm.expect(response.cards).to.be.empty;\r",
+									"})"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -3538,9 +3646,9 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"let invalidQuery = 'l';\r",
+									"let invalidQuery = 'N';\r",
 									"\r",
-									"pm.collectionVariables.set('query');\r",
+									"pm.collectionVariables.set('query', invalidQuery);\r",
 									"\r",
 									""
 								],
@@ -3553,14 +3661,24 @@
 							"script": {
 								"exec": [
 									"const response = pm.response.json();\r",
+									"const queryArray = response.options.terms;\r",
+									"let query = pm.collectionVariables.get('query');    \r",
 									"\r",
 									"pm.test(\"Status code is 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
-									"pm.test('The response text is null', ()=>{\r",
-									"pm.expect(response.options.terms[0].text).to.eql('null');\r",
-									"})  "
+									"pm.test('The response query array is empty', ()=>{   \r",
+									"for (let item of queryArray) {\r",
+									"pm.expect(query).to.contain(item.text)\r",
+									"}\r",
+									"})   \r",
+									"\r",
+									"pm.test('Search query correctly displayed no results', ()=>{\r",
+									"pm.expect(response.boards).to.be.empty;\r",
+									"pm.expect(response.organizations).to.be.empty;\r",
+									"pm.expect(response.cards).to.be.empty;\r",
+									"})"
 								],
 								"type": "text/javascript",
 								"packages": {}
